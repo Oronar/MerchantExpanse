@@ -338,6 +338,31 @@ namespace MerchantExpanse.SpaceTraders.Tests
 
 		#endregion Locations
 
+		#region Marketplace
+
+		[TestMethod]
+		public async Task GetMarketplaceAsync_ReturnsMarketLocation()
+		{
+			var location = new MarketLocation()
+			{
+				Symbol = "OE",
+				Marketplace = new List<Good>()
+				{
+					new Good()
+				}
+			};
+			var mockRestClient = RestSharpMocks.BuildMockRestClient(HttpStatusCode.OK, "location", location);
+			var client = new Client("apitoken", "username", mockRestClient.Object);
+
+			var result = await client.GetMarketplaceAsync(location.Symbol);
+
+			mockRestClient.Verify(m => m.ExecuteAsync(It.Is<IRestRequest>(request => request.Resource.Contains(location.Symbol)), It.IsAny<CancellationToken>()), Times.Once);
+			Assert.IsNotNull(result);
+			Assert.AreEqual(1, location.Marketplace.Count());
+		}
+
+		#endregion Marketplace
+
 		#region Private Methods
 
 		private bool ContainsParameter(IRestRequest request, string name, string value)

@@ -155,6 +155,14 @@ namespace MerchantExpanse.SpaceTraders
 			return result;
 		}
 
+		public async Task<MarketLocation> GetMarketplaceAsync(string locationSymbol)
+		{
+			var request = new RestRequest($"game/locations/{locationSymbol}/marketplace");
+			var response = await RestClient.ExecuteAsync(request);
+
+			return response.DeserializeContent<MarketLocation>("location");
+		}
+
 		#endregion Locations
 	}
 }

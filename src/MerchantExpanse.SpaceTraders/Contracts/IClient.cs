@@ -31,5 +31,7 @@ namespace MerchantExpanse.SpaceTraders.Contracts
 		Task<LocationDetail> GetLocationAsync(string locationSymbol);
 
 		Task<LocationDetail> GetLocationShipsAsync(string locationSymbol);
+
+		Task<MarketLocation> GetMarketplaceAsync(string locationSymbol);
 	}
 }

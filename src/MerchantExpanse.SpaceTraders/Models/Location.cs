@@ -25,4 +25,9 @@ namespace MerchantExpanse.SpaceTraders.Models
 
 		public int DockedShips { get; set; }
 	}
+
+	public class MarketLocation : Location
+	{
+		public IEnumerable<Good> Marketplace { get; set; }
+	}
 }
