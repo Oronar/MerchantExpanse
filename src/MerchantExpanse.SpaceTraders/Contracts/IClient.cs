@@ -19,5 +19,7 @@ namespace MerchantExpanse.SpaceTraders.Contracts
 		Task<IEnumerable<AvailableShip>> GetAvailableShipsAsync(string shipClass = null);
 
 		Task<User> PurchaseShipAsync(string location, string type);
+
+		Task ScrapShipAsync(string shipId);
 	}
 }

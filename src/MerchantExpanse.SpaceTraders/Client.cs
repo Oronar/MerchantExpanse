@@ -91,6 +91,15 @@ namespace MerchantExpanse.SpaceTraders
 			return response.DeserializeContent<User>("user");
 		}
 
+		public async Task ScrapShipAsync(string shipId)
+		{
+			var request = new RestRequest($"users/{Username}/ships/{shipId}");
+
+			var response = await RestClient.ExecuteAsync(request);
+
+			_ = response.DeserializeContent<SuccessResponse>("success");
+		}
+
 		#endregion Ships
 	}
 }

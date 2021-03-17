@@ -1,4 +1,4 @@
-﻿using MerchantExpanse.SpaceTraders.Models;
+using MerchantExpanse.SpaceTraders.Models;
 using MerchantExpanse.SpaceTraders.Tests.TestHelpers;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
@@ -200,6 +200,19 @@ namespace MerchantExpanse.SpaceTraders.Tests
 
 			Assert.IsNotNull(result);
 			Assert.AreEqual(1, result.Ships.Count());
+		}
+
+		[TestMethod]
+		public async Task ScrapShipAsync_Returns()
+		{
+			var expectedShipId = "1a2b";
+			var mockRestClient = RestSharpMocks.BuildMockRestClient(HttpStatusCode.OK, "success", new SuccessResponse());
+			var client = new Client("apitoken", "username", mockRestClient.Object);
+
+			await client.ScrapShipAsync(expectedShipId);
+
+			mockRestClient.Verify(m => m.ExecuteAsync(It.Is<IRestRequest>(request => request.Resource.Contains(expectedShipId))
+				, It.IsAny<CancellationToken>()), Times.Once);
 		}
 
 		#endregion Ships
