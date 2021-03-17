@@ -26,7 +26,7 @@ namespace MerchantExpanse.SpaceTraders.Tests.Extensions
 		{
 			var propertyName = "error";
 			var expectedMessage = "message";
-			var expectedStatusCode = 400;
+			var expectedStatusCode = 404;
 			var mockResponse = RestSharpMocks.BuildMockRestResponse(HttpStatusCode.NotFound, propertyName, new Error() { Message = expectedMessage, Code = expectedStatusCode }).Object;
 
 			var exception = Assert.ThrowsException<ApiException>(() => mockResponse.DeserializeContent<TestObject>(propertyName));

@@ -2,7 +2,7 @@
 
 namespace MerchantExpanse.SpaceTraders.Models
 {
-	public class Ship
+	public class Ship : ShipBase
 	{
 		public string Id { get; set; }
 
@@ -15,7 +15,10 @@ namespace MerchantExpanse.SpaceTraders.Models
 		public IEnumerable<Cargo> Cargo { get; set; }
 
 		public int SpaceAvailable { get; set; }
+	}
 
+	public abstract class ShipBase
+	{
 		public string Type { get; set; }
 
 		public string Class { get; set; }
@@ -29,5 +32,16 @@ namespace MerchantExpanse.SpaceTraders.Models
 		public int Plating { get; set; }
 
 		public int Weapons { get; set; }
+	}
+
+	public class AvailableShip : ShipBase
+	{
+		public IEnumerable<Purchaselocation> PurchaseLocations { get; set; }
+	}
+
+	public class Purchaselocation
+	{
+		public string Location { get; set; }
+		public int Price { get; set; }
 	}
 }

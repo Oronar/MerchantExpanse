@@ -29,6 +29,8 @@ namespace MerchantExpanse.SpaceTraders
 			return response.DeserializeContent<User>("user");
 		}
 
+		#region Loans
+
 		public async Task<IEnumerable<Loan>> GetLoansAsync()
 		{
 			var request = new RestRequest($"users/{Username}/loans");
@@ -53,5 +55,42 @@ namespace MerchantExpanse.SpaceTraders
 
 			return response.DeserializeContent<User>("user");
 		}
+
+		#endregion Loans
+
+		#region Ships
+
+		public async Task<IEnumerable<Ship>> GetShipsAsync()
+		{
+			var request = new RestRequest($"users/{Username}/ships");
+			var response = await RestClient.ExecuteAsync(request);
+
+			return response.DeserializeContent<IEnumerable<Ship>>("ships");
+		}
+
+		public async Task<IEnumerable<AvailableShip>> GetAvailableShipsAsync(string shipClass = null)
+		{
+			var request = new RestRequest("game/ships");
+			if (shipClass != null)
+			{
+				request.AddParameter("class", shipClass);
+			}
+			var response = await RestClient.ExecuteAsync(request);
+
+			return response.DeserializeContent<IEnumerable<AvailableShip>>("ships");
+		}
+
+		public async Task<User> PurchaseShipAsync(string location, string type)
+		{
+			var request = new RestRequest($"users/{Username}/ships", Method.POST);
+			request.AddParameter("location", location);
+			request.AddParameter("type", type);
+
+			var response = await RestClient.ExecuteAsync(request);
+
+			return response.DeserializeContent<User>("user");
+		}
+
+		#endregion Ships
 	}
 }

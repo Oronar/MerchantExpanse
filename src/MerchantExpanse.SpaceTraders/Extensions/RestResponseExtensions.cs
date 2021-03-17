@@ -2,7 +2,6 @@
 using MerchantExpanse.SpaceTraders.Models;
 using Newtonsoft.Json.Linq;
 using RestSharp;
-using System.Net;
 
 namespace MerchantExpanse.SpaceTraders.Extensions
 {
@@ -12,7 +11,7 @@ namespace MerchantExpanse.SpaceTraders.Extensions
 		{
 			var jobject = JObject.Parse(response.Content);
 
-			if (response.StatusCode == HttpStatusCode.OK)
+			if ((int)response.StatusCode >= 200 && (int)response.StatusCode < 300)
 			{
 				return jobject[propertyName].ToObject<T>();
 			}
