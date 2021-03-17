@@ -4,6 +4,7 @@ using MerchantExpanse.SpaceTraders.Models;
 using RestSharp;
 using RestSharp.Authenticators;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace MerchantExpanse.SpaceTraders
@@ -109,5 +110,51 @@ namespace MerchantExpanse.SpaceTraders
 		}
 
 		#endregion Ships
+
+		#region Systems
+
+		public async Task<IEnumerable<StarSystem>> GetSystemsAsync()
+		{
+			var request = new RestRequest("game/systems");
+			var response = await RestClient.ExecuteAsync(request);
+
+			return response.DeserializeContent<IEnumerable<StarSystem>>("systems");
+		}
+
+		#endregion Systems
+
+		#region Locations
+
+		public async Task<IEnumerable<Location>> GetSystemLocations(string systemSymbol)
+		{
+			var request = new RestRequest($"game/systems/{systemSymbol}/locations");
+			var response = await RestClient.ExecuteAsync(request);
+
+			return response.DeserializeContent<IEnumerable<Location>>("locations");
+		}
+
+		public async Task<LocationDetail> GetLocationAsync(string locationSymbol)
+		{
+			var request = new RestRequest($"game/locations/{locationSymbol}");
+			var response = await RestClient.ExecuteAsync(request);
+
+			var result = response.DeserializeContent<LocationDetail>("location");
+			result.DockedShips = response.DeserializeContent<int>("dockedShips");
+
+			return result;
+		}
+
+		public async Task<LocationDetail> GetLocationShipsAsync(string locationSymbol)
+		{
+			var request = new RestRequest($"game/locations/{locationSymbol}/ships");
+			var response = await RestClient.ExecuteAsync(request);
+
+			var result = response.DeserializeContent<LocationDetail>("location");
+			result.DockedShips = result.Ships.Count();
+
+			return result;
+		}
+
+		#endregion Locations
 	}
 }

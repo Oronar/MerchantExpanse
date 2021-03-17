@@ -44,4 +44,13 @@ namespace MerchantExpanse.SpaceTraders.Models
 		public string Location { get; set; }
 		public int Price { get; set; }
 	}
+
+	public class ShipPlate
+	{
+		public string ShipId { get; set; }
+
+		public string Username { get; set; }
+
+		public string ShipType { get; set; }
+	}
 }

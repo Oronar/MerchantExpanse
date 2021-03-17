@@ -23,5 +23,13 @@ namespace MerchantExpanse.SpaceTraders.Contracts
 		Task<User> PurchaseShipAsync(string location, string type);
 
 		Task ScrapShipAsync(string shipId);
+
+		Task<IEnumerable<StarSystem>> GetSystemsAsync();
+
+		Task<IEnumerable<Location>> GetSystemLocations(string systemSymbol);
+
+		Task<LocationDetail> GetLocationAsync(string locationSymbol);
+
+		Task<LocationDetail> GetLocationShipsAsync(string locationSymbol);
 	}
 }

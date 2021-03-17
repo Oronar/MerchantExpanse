@@ -2,9 +2,11 @@ using MerchantExpanse.SpaceTraders.Models;
 using MerchantExpanse.SpaceTraders.Tests.TestHelpers;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
+using Newtonsoft.Json;
 using RestSharp;
 using System;
 using System.Collections.Generic;
+using System.Dynamic;
 using System.Linq;
 using System.Net;
 using System.Threading;
@@ -232,6 +234,109 @@ namespace MerchantExpanse.SpaceTraders.Tests
 		}
 
 		#endregion Ships
+
+		#region Systems
+
+		[TestMethod]
+		public async Task GetSystemsAsync_ReturnsSystems()
+		{
+			var systems = new List<StarSystem>()
+			{
+				new StarSystem()
+			};
+			var mockRestClient = RestSharpMocks.BuildMockRestClient(HttpStatusCode.OK, "systems", systems);
+			var client = new Client("apitoken", "username", mockRestClient.Object);
+
+			var result = await client.GetSystemsAsync();
+
+			mockRestClient.Verify();
+			Assert.IsNotNull(result);
+			Assert.AreEqual(1, result.Count());
+		}
+
+		#endregion Systems
+
+		#region Locations
+
+		[TestMethod]
+		public async Task GetSystemLocationsAsync_ReturnsLocations()
+		{
+			var expectedSystemSymbol = "OE";
+			var locations = new List<Location>()
+			{
+				new Location()
+			};
+			var mockRestClient = RestSharpMocks.BuildMockRestClient(HttpStatusCode.OK, "locations", locations);
+			var client = new Client("apitoken", "username", mockRestClient.Object);
+
+			var result = await client.GetSystemLocations(expectedSystemSymbol);
+
+			mockRestClient.Verify(m => m.ExecuteAsync(It.Is<IRestRequest>(request => request.Resource.Contains(expectedSystemSymbol))
+				, It.IsAny<CancellationToken>()), Times.Once);
+
+			Assert.IsNotNull(result);
+			Assert.AreEqual(1, result.Count());
+		}
+
+		[TestMethod]
+		public async Task GetLocationAsync_ReturnsLocation()
+		{
+			var location = new Location()
+			{
+				Symbol = "OE-PM-TR"
+			};
+			var expectedShips = 10;
+			var mockResponse = new Mock<IRestResponse>();
+			var payload = new ExpandoObject() as IDictionary<string, object>;
+			payload.Add("location", location);
+			payload.Add("dockedShips", expectedShips);
+
+			mockResponse.SetupGet(m => m.Content)
+				.Returns(JsonConvert.SerializeObject(payload));
+			mockResponse.SetupGet(m => m.StatusCode)
+				.Returns(HttpStatusCode.OK);
+
+			var mockRestClient = new Mock<IRestClient>();
+
+			mockRestClient.Setup(m => m.ExecuteAsync(It.IsAny<IRestRequest>(), It.IsAny<CancellationToken>()))
+				.ReturnsAsync(mockResponse.Object);
+
+			var client = new Client("apitoken", "username", mockRestClient.Object);
+
+			var result = await client.GetLocationAsync(location.Symbol);
+
+			mockRestClient.Verify(m => m.ExecuteAsync(It.Is<IRestRequest>(request => request.Resource.Contains(location.Symbol))
+				, It.IsAny<CancellationToken>()), Times.Once);
+
+			Assert.IsNotNull(result);
+			Assert.AreEqual(expectedShips, result.DockedShips);
+		}
+
+		[TestMethod]
+		public async Task GetLocationShipsAsync_ReturnsShips()
+		{
+			var location = new LocationDetail()
+			{
+				Symbol = "OE",
+				Ships = new List<ShipPlate>()
+				{
+					new ShipPlate()
+				}
+			};
+			var mockRestClient = RestSharpMocks.BuildMockRestClient(HttpStatusCode.OK, "location", location);
+			var client = new Client("apitoken", "username", mockRestClient.Object);
+
+			var result = await client.GetLocationShipsAsync(location.Symbol);
+
+			mockRestClient.Verify(m => m.ExecuteAsync(It.Is<IRestRequest>(request => request.Resource.Contains(location.Symbol))
+				, It.IsAny<CancellationToken>()), Times.Once);
+
+			Assert.IsNotNull(result);
+			Assert.AreEqual(location.Ships.Count(), result.DockedShips);
+			Assert.AreEqual(1, result.Ships.Count());
+		}
+
+		#endregion Locations
 
 		#region Private Methods
 
