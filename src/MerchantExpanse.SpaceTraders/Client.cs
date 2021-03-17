@@ -60,6 +60,14 @@ namespace MerchantExpanse.SpaceTraders
 
 		#region Ships
 
+		public async Task<Ship> GetShipAsync(string shipId)
+		{
+			var request = new RestRequest($"users/{Username}/ships/{shipId}");
+			var response = await RestClient.ExecuteAsync(request);
+
+			return response.DeserializeContent<Ship>("ship");
+		}
+
 		public async Task<IEnumerable<Ship>> GetShipsAsync()
 		{
 			var request = new RestRequest($"users/{Username}/ships");

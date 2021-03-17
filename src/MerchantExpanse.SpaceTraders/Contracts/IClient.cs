@@ -14,6 +14,8 @@ namespace MerchantExpanse.SpaceTraders.Contracts
 
 		Task<User> TakeOutLoanAsync(string type);
 
+		Task<Ship> GetShipAsync(string shipId);
+
 		Task<IEnumerable<Ship>> GetShipsAsync();
 
 		Task<IEnumerable<AvailableShip>> GetAvailableShipsAsync(string shipClass = null);

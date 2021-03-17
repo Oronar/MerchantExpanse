@@ -114,6 +114,22 @@ namespace MerchantExpanse.SpaceTraders.Tests
 		#region Ships
 
 		[TestMethod]
+		public async Task GetShipAsync_ReturnsShip()
+		{
+			var ship = new Ship()
+			{
+				Id = "1a2b"
+			};
+			var mockRestClient = RestSharpMocks.BuildMockRestClient(HttpStatusCode.OK, "ship", ship);
+			var client = new Client("apitoken", "username", mockRestClient.Object);
+
+			var result = await client.GetShipAsync(ship.Id);
+
+			mockRestClient.Verify(m => m.ExecuteAsync(It.Is<IRestRequest>(request => request.Resource.Contains(ship.Id)), It.IsAny<CancellationToken>()), Times.Once);
+			Assert.IsNotNull(result);
+		}
+
+		[TestMethod]
 		public async Task GetShipsAsync_ReturnsShips()
 		{
 			var ships = new List<Ship>()
