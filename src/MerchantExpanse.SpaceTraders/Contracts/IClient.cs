@@ -11,5 +11,7 @@ namespace MerchantExpanse.SpaceTraders.Contracts
 		Task<IEnumerable<Loan>> GetLoansAsync();
 
 		Task<IEnumerable<AvailableLoan>> GetAvailableLoansAsync();
+
+		Task<User> TakeOutLoanAsync(string type);
 	}
 }

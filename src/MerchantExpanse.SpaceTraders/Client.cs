@@ -44,5 +44,14 @@ namespace MerchantExpanse.SpaceTraders
 
 			return response.DeserializeContent<IEnumerable<AvailableLoan>>("loans");
 		}
+
+		public async Task<User> TakeOutLoanAsync(string type)
+		{
+			var request = new RestRequest($"users/{Username}/loans", Method.POST);
+			request.AddParameter("type", type);
+			var response = await RestClient.ExecuteAsync(request);
+
+			return response.DeserializeContent<User>("user");
+		}
 	}
 }

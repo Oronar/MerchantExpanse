@@ -1,10 +1,8 @@
-﻿using MerchantExpanse.SpaceTraders.Models;
+﻿using MerchantExpanse.SpaceTraders.Exceptions;
+using MerchantExpanse.SpaceTraders.Models;
 using Newtonsoft.Json.Linq;
 using RestSharp;
-using System;
-using System.Collections.Generic;
 using System.Net;
-using System.Security.Authentication;
 
 namespace MerchantExpanse.SpaceTraders.Extensions
 {
@@ -14,18 +12,17 @@ namespace MerchantExpanse.SpaceTraders.Extensions
 		{
 			var jobject = JObject.Parse(response.Content);
 
-			return response.StatusCode switch
+			if (response.StatusCode == HttpStatusCode.OK)
 			{
-				HttpStatusCode.OK => jobject[propertyName].ToObject<T>(),
-				HttpStatusCode.NotFound => throw new KeyNotFoundException(GetError(jobject)),
-				HttpStatusCode.Unauthorized => throw new AuthenticationException(GetError(jobject)),
-				_ => throw new InvalidOperationException(GetError(jobject)),
-			};
+				return jobject[propertyName].ToObject<T>();
+			}
+
+			throw new ApiException(GetError(jobject));
 		}
 
-		private static string GetError(JObject response)
+		private static Error GetError(JObject response)
 		{
-			return response["error"].ToObject<Error>().Message;
+			return response["error"].ToObject<Error>();
 		}
 	}
 }
