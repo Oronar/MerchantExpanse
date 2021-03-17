@@ -102,8 +102,7 @@ namespace MerchantExpanse.SpaceTraders.Tests
 			var result = await client.TakeOutLoanAsync("STARTUP");
 
 			mockRestClient.Verify(m => m.ExecuteAsync(It.Is<IRestRequest>(request =>
-				request.Parameters[0].Value.Equals(expectedLoanType)
-				&& request.Parameters[0].Name.Equals("type"))
+				ContainsParameter(request, "type", expectedLoanType))
 				, It.IsAny<CancellationToken>()), Times.Once);
 
 			Assert.IsNotNull(result);
@@ -169,8 +168,7 @@ namespace MerchantExpanse.SpaceTraders.Tests
 			var result = await client.GetAvailableShipsAsync(expectedShipClass);
 
 			mockRestClient.Verify(m => m.ExecuteAsync(It.Is<IRestRequest>(request =>
-				request.Parameters[0].Value.Equals(expectedShipClass)
-				&& request.Parameters[0].Name.Equals("class"))
+				ContainsParameter(request, "class", expectedShipClass))
 				, It.IsAny<CancellationToken>()), Times.Once);
 
 			Assert.IsNotNull(result);
@@ -196,10 +194,8 @@ namespace MerchantExpanse.SpaceTraders.Tests
 			var result = await client.PurchaseShipAsync(expectedLocation, expectedType);
 
 			mockRestClient.Verify(m => m.ExecuteAsync(It.Is<IRestRequest>(request =>
-				request.Parameters[0].Name.Equals("location")
-				&& request.Parameters[0].Value.Equals(expectedLocation)
-				&& request.Parameters[1].Name.Equals("type")
-				&& request.Parameters[1].Value.Equals(expectedType))
+				ContainsParameter(request, "location", expectedLocation)
+				&& ContainsParameter(request, "type", expectedType))
 				, It.IsAny<CancellationToken>()), Times.Once);
 
 			Assert.IsNotNull(result);
@@ -207,5 +203,14 @@ namespace MerchantExpanse.SpaceTraders.Tests
 		}
 
 		#endregion Ships
+
+		#region Private Methods
+
+		private bool ContainsParameter(IRestRequest request, string name, string value)
+		{
+			return request.Parameters.Any(x => x.Name.Equals(name) && x.Value.Equals(value));
+		}
+
+		#endregion Private Methods
 	}
 }
