@@ -7,9 +7,15 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{2F88606D-13E
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{846EE02E-1EE1-4A01-A381-1E72754329F0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MerchantExpanse.SpaceTraders", "src\MerchantExpanse.SpaceTraders\MerchantExpanse.SpaceTraders.csproj", "{D941D6DC-2249-4F71-8A5C-7AE3F63C85C4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MerchantExpanse.SpaceTraders", "src\MerchantExpanse.SpaceTraders\MerchantExpanse.SpaceTraders.csproj", "{D941D6DC-2249-4F71-8A5C-7AE3F63C85C4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MerchantExpanse.SpaceTraders.Tests", "tests\MerchantExpanse.SpaceTraders.Tests\MerchantExpanse.SpaceTraders.Tests.csproj", "{BF6943CA-73D2-4194-9647-4AB381C2EC8D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MerchantExpanse.SpaceTraders.Tests", "tests\MerchantExpanse.SpaceTraders.Tests\MerchantExpanse.SpaceTraders.Tests.csproj", "{BF6943CA-73D2-4194-9647-4AB381C2EC8D}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{70C6BEF1-173D-494A-BDE6-041EB3092BFD}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "examples", "examples", "{1CDC87FE-FEBC-41B8-B01B-CF18130EDEA6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MerchantExpanse.BasicExample", "docs\examples\MerchantExpanse.BasicExample\MerchantExpanse.BasicExample.csproj", "{40AA5193-379B-44B2-ABEC-226BB0CD0D91}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -25,6 +31,10 @@ Global
 		{BF6943CA-73D2-4194-9647-4AB381C2EC8D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BF6943CA-73D2-4194-9647-4AB381C2EC8D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BF6943CA-73D2-4194-9647-4AB381C2EC8D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{40AA5193-379B-44B2-ABEC-226BB0CD0D91}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{40AA5193-379B-44B2-ABEC-226BB0CD0D91}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{40AA5193-379B-44B2-ABEC-226BB0CD0D91}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{40AA5193-379B-44B2-ABEC-226BB0CD0D91}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -32,6 +42,8 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{D941D6DC-2249-4F71-8A5C-7AE3F63C85C4} = {2F88606D-13ED-4DA9-A222-E0E394674637}
 		{BF6943CA-73D2-4194-9647-4AB381C2EC8D} = {846EE02E-1EE1-4A01-A381-1E72754329F0}
+		{1CDC87FE-FEBC-41B8-B01B-CF18130EDEA6} = {70C6BEF1-173D-494A-BDE6-041EB3092BFD}
+		{40AA5193-379B-44B2-ABEC-226BB0CD0D91} = {1CDC87FE-FEBC-41B8-B01B-CF18130EDEA6}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {A34BC8C3-D038-48EB-A177-E3A1B076A845}
