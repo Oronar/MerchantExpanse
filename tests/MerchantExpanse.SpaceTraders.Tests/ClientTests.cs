@@ -361,6 +361,80 @@ namespace MerchantExpanse.SpaceTraders.Tests
 			Assert.AreEqual(1, location.Marketplace.Count());
 		}
 
+		[TestMethod]
+		public async Task PurchaseGood_ReturnsOrder()
+		{
+			var order = new Order();
+			var expectedShipId = "1a2b";
+			var expectedGood = "metals";
+			var expectedQuantity = 100;
+			var expectedCredits = 10000;
+			var mockResponse = new Mock<IRestResponse>();
+			var payload = new ExpandoObject() as IDictionary<string, object>;
+			payload.Add("order", order);
+			payload.Add("credits", expectedCredits);
+
+			mockResponse.SetupGet(m => m.Content)
+				.Returns(JsonConvert.SerializeObject(payload));
+			mockResponse.SetupGet(m => m.StatusCode)
+				.Returns(HttpStatusCode.OK);
+
+			var mockRestClient = new Mock<IRestClient>();
+
+			mockRestClient.Setup(m => m.ExecuteAsync(It.IsAny<IRestRequest>(), It.IsAny<CancellationToken>()))
+				.ReturnsAsync(mockResponse.Object);
+
+			var client = new Client("apitoken", "username", mockRestClient.Object);
+
+			var result = await client.PurchaseGood(expectedShipId, expectedGood, expectedQuantity);
+
+			mockRestClient.Verify(m => m.ExecuteAsync(It.Is<IRestRequest>(request =>
+				ContainsParameter(request, "shipId", expectedShipId) &&
+				ContainsParameter(request, "good", expectedGood) &&
+				ContainsParameter(request, "quantity", expectedQuantity.ToString()))
+				, It.IsAny<CancellationToken>()), Times.Once);
+
+			Assert.IsNotNull(result);
+			Assert.AreEqual(expectedCredits, result.Credits);
+		}
+
+		[TestMethod]
+		public async Task SellGood_ReturnsOrder()
+		{
+			var order = new Order();
+			var expectedShipId = "1a2b";
+			var expectedGood = "metals";
+			var expectedQuantity = 100;
+			var expectedCredits = 10000;
+			var mockResponse = new Mock<IRestResponse>();
+			var payload = new ExpandoObject() as IDictionary<string, object>;
+			payload.Add("order", order);
+			payload.Add("credits", expectedCredits);
+
+			mockResponse.SetupGet(m => m.Content)
+				.Returns(JsonConvert.SerializeObject(payload));
+			mockResponse.SetupGet(m => m.StatusCode)
+				.Returns(HttpStatusCode.OK);
+
+			var mockRestClient = new Mock<IRestClient>();
+
+			mockRestClient.Setup(m => m.ExecuteAsync(It.IsAny<IRestRequest>(), It.IsAny<CancellationToken>()))
+				.ReturnsAsync(mockResponse.Object);
+
+			var client = new Client("apitoken", "username", mockRestClient.Object);
+
+			var result = await client.SellGood(expectedShipId, expectedGood, expectedQuantity);
+
+			mockRestClient.Verify(m => m.ExecuteAsync(It.Is<IRestRequest>(request =>
+				ContainsParameter(request, "shipId", expectedShipId) &&
+				ContainsParameter(request, "good", expectedGood) &&
+				ContainsParameter(request, "quantity", expectedQuantity.ToString()))
+				, It.IsAny<CancellationToken>()), Times.Once);
+
+			Assert.IsNotNull(result);
+			Assert.AreEqual(expectedCredits, result.Credits);
+		}
+
 		#endregion Marketplace
 
 		#region Private Methods

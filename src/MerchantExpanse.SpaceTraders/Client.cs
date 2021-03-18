@@ -155,6 +155,10 @@ namespace MerchantExpanse.SpaceTraders
 			return result;
 		}
 
+		#endregion Locations
+
+		#region Market
+
 		public async Task<MarketLocation> GetMarketplaceAsync(string locationSymbol)
 		{
 			var request = new RestRequest($"game/locations/{locationSymbol}/marketplace");
@@ -163,6 +167,34 @@ namespace MerchantExpanse.SpaceTraders
 			return response.DeserializeContent<MarketLocation>("location");
 		}
 
-		#endregion Locations
+		public async Task<Order> PurchaseGood(string shipId, string good, int quantity)
+		{
+			var request = new RestRequest($"users/{Username}/purchase-orders", Method.POST);
+			request.AddParameter("shipId", shipId);
+			request.AddParameter("good", good);
+			request.AddParameter("quantity", quantity.ToString());
+			var response = await RestClient.ExecuteAsync(request);
+
+			var result = response.DeserializeContent<Order>("order");
+			result.Credits = response.DeserializeContent<int>("credits");
+
+			return result;
+		}
+
+		public async Task<Order> SellGood(string shipId, string good, int quantity)
+		{
+			var request = new RestRequest($"users/{Username}/sell-orders", Method.POST);
+			request.AddParameter("shipId", shipId);
+			request.AddParameter("good", good);
+			request.AddParameter("quantity", quantity.ToString());
+			var response = await RestClient.ExecuteAsync(request);
+
+			var result = response.DeserializeContent<Order>("order");
+			result.Credits = response.DeserializeContent<int>("credits");
+
+			return result;
+		}
+
+		#endregion Market
 	}
 }
