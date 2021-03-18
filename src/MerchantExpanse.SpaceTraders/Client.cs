@@ -226,5 +226,13 @@ namespace MerchantExpanse.SpaceTraders
 		}
 
 		#endregion Flight Plans
+
+		public async Task<string> GetStatusAsync()
+		{
+			var request = new RestRequest("game/status");
+			var response = await RestClient.ExecuteAsync(request);
+
+			return response.DeserializeContent<string>("status");
+		}
 	}
 }

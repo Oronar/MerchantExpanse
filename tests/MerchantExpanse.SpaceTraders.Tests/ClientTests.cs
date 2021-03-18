@@ -497,6 +497,20 @@ namespace MerchantExpanse.SpaceTraders.Tests
 
 		#endregion Flight Plans
 
+		[TestMethod]
+		public async Task GetStatusAsync_ReturnsStatus()
+		{
+			var status = "spacetraders is currently online and available to play";
+			var mockRestClient = RestSharpMocks.BuildMockRestClient(HttpStatusCode.OK, "status", status);
+			var client = new Client("apitoken", "username", mockRestClient.Object);
+
+			var result = await client.GetStatusAsync();
+
+			mockRestClient.Verify();
+			Assert.IsNotNull(result);
+			Assert.AreEqual(status, result);
+		}
+
 		#region Private Methods
 
 		private bool ContainsParameter(IRestRequest request, string name, string value)

@@ -43,5 +43,7 @@ namespace MerchantExpanse.SpaceTraders.Contracts
 		Task<FlightPlan> GetFlightPlanAsync(string flightPlanId);
 
 		Task<FlightPlan> SubmitFightPlanAsync(string shipId, string destinationId);
+
+		Task<string> GetStatusAsync();
 	}
 }
