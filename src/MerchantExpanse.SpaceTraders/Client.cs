@@ -2,7 +2,7 @@
 using MerchantExpanse.SpaceTraders.Extensions;
 using MerchantExpanse.SpaceTraders.Models;
 using RestSharp;
-using RestSharp.Authenticators;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -11,15 +11,17 @@ namespace MerchantExpanse.SpaceTraders
 {
 	public class Client : IClient
 	{
-		private string Username { get; set; }
-		private IRestClient RestClient { get; set; }
+		public string Username { get; }
+
+		public string ApiToken { get; }
+
+		private IRestClient RestClient;
 
 		public Client(string apiToken, string username, IRestClient restClient)
 		{
-			Username = username;
-			RestClient = restClient;
-
-			RestClient.Authenticator = new JwtAuthenticator(apiToken);
+			ApiToken = apiToken ?? throw new ArgumentNullException(nameof(apiToken));
+			Username = username ?? throw new ArgumentNullException(nameof(username));
+			RestClient = restClient ?? throw new ArgumentNullException(nameof(restClient));
 		}
 
 		public async Task<User> GetUserAsync()

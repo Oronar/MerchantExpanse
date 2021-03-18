@@ -17,6 +17,36 @@ namespace MerchantExpanse.SpaceTraders.Tests
 	[TestClass]
 	public class ClientTests
 	{
+		#region Client
+
+		[TestMethod]
+		public void Client_WithNullApiToken_ThrowsException()
+		{
+			var result = Assert.ThrowsException<ArgumentNullException>(() => new Client(null, "username", new Mock<IRestClient>().Object));
+
+			Assert.IsNotNull(result);
+		}
+
+		[TestMethod]
+		public void Client_WithNullUsername_ThrowsException()
+		{
+			var result = Assert.ThrowsException<ArgumentNullException>(() => new Client("apiToken", null, new Mock<IRestClient>().Object));
+
+			Assert.IsNotNull(result);
+		}
+
+		[TestMethod]
+		public void Client_WithNullRestClient_ThrowsException()
+		{
+			var result = Assert.ThrowsException<ArgumentNullException>(() => new Client("apiToken", "username", null));
+
+			Assert.IsNotNull(result);
+		}
+
+		#endregion Client
+
+		#region User
+
 		[TestMethod]
 		public async Task GetUserAsync_ReturnsUser()
 		{
@@ -33,6 +63,8 @@ namespace MerchantExpanse.SpaceTraders.Tests
 			Assert.IsNotNull(result);
 			Assert.AreEqual(user.Username, result.Username);
 		}
+
+		#endregion User
 
 		#region Loans
 
