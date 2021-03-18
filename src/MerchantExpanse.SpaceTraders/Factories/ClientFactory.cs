@@ -11,7 +11,7 @@ namespace MerchantExpanse.SpaceTraders.Factories
 
 		public async static Task<Client> RegisterAsync(string username)
 		{
-			var request = new RestRequest($"users/{username}/token");
+			var request = new RestRequest($"users/{username}/token", Method.POST);
 			var response = await new RestClient(SpaceTradersUrl).ExecuteAsync(request);
 
 			var apiToken = response.DeserializeContent<string>("token");
