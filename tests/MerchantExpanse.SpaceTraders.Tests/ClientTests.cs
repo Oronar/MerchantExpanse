@@ -362,7 +362,7 @@ namespace MerchantExpanse.SpaceTraders.Tests
 		}
 
 		[TestMethod]
-		public async Task PurchaseGood_ReturnsOrder()
+		public async Task PurchaseGoodAsync_ReturnsOrder()
 		{
 			var order = new Order();
 			var expectedShipId = "1a2b";
@@ -386,7 +386,7 @@ namespace MerchantExpanse.SpaceTraders.Tests
 
 			var client = new Client("apitoken", "username", mockRestClient.Object);
 
-			var result = await client.PurchaseGood(expectedShipId, expectedGood, expectedQuantity);
+			var result = await client.PurchaseGoodAsync(expectedShipId, expectedGood, expectedQuantity);
 
 			mockRestClient.Verify(m => m.ExecuteAsync(It.Is<IRestRequest>(request =>
 				ContainsParameter(request, "shipId", expectedShipId) &&
@@ -399,7 +399,7 @@ namespace MerchantExpanse.SpaceTraders.Tests
 		}
 
 		[TestMethod]
-		public async Task SellGood_ReturnsOrder()
+		public async Task SellGoodAsync_ReturnsOrder()
 		{
 			var order = new Order();
 			var expectedShipId = "1a2b";
@@ -423,7 +423,7 @@ namespace MerchantExpanse.SpaceTraders.Tests
 
 			var client = new Client("apitoken", "username", mockRestClient.Object);
 
-			var result = await client.SellGood(expectedShipId, expectedGood, expectedQuantity);
+			var result = await client.SellGoodAsync(expectedShipId, expectedGood, expectedQuantity);
 
 			mockRestClient.Verify(m => m.ExecuteAsync(It.Is<IRestRequest>(request =>
 				ContainsParameter(request, "shipId", expectedShipId) &&

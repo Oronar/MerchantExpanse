@@ -167,7 +167,7 @@ namespace MerchantExpanse.SpaceTraders
 			return response.DeserializeContent<MarketLocation>("location");
 		}
 
-		public async Task<Order> PurchaseGood(string shipId, string good, int quantity)
+		public async Task<Order> PurchaseGoodAsync(string shipId, string good, int quantity)
 		{
 			var request = new RestRequest($"users/{Username}/purchase-orders", Method.POST);
 			request.AddParameter("shipId", shipId);
@@ -181,7 +181,7 @@ namespace MerchantExpanse.SpaceTraders
 			return result;
 		}
 
-		public async Task<Order> SellGood(string shipId, string good, int quantity)
+		public async Task<Order> SellGoodAsync(string shipId, string good, int quantity)
 		{
 			var request = new RestRequest($"users/{Username}/sell-orders", Method.POST);
 			request.AddParameter("shipId", shipId);
