@@ -6,6 +6,8 @@ namespace MerchantExpanse.SpaceTraders.Models
 	{
 		public string Id { get; set; }
 
+		public string FlightPlanId { get; set; }
+
 		public string Location { get; set; }
 
 		public int X { get; set; }

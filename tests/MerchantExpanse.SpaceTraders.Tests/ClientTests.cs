@@ -437,6 +437,66 @@ namespace MerchantExpanse.SpaceTraders.Tests
 
 		#endregion Marketplace
 
+		#region Flight Plans
+
+		[TestMethod]
+		public async Task GetFlightPlansAsync_ReturnsFlightPlans()
+		{
+			var expectedSystemSymbol = "OE";
+			var flightPlans = new List<PublicFlightPlan>()
+			{
+				new PublicFlightPlan()
+			};
+			var mockRestClient = RestSharpMocks.BuildMockRestClient(HttpStatusCode.OK, "flightPlans", flightPlans);
+			var client = new Client("apitoken", "username", mockRestClient.Object);
+
+			var result = await client.GetFlightPlansAsync(expectedSystemSymbol);
+
+			mockRestClient.Verify(m => m.ExecuteAsync(It.Is<IRestRequest>(request => request.Resource.Contains(expectedSystemSymbol)), It.IsAny<CancellationToken>()), Times.Once);
+			Assert.IsNotNull(result);
+			Assert.AreEqual(1, result.Count());
+		}
+
+		[TestMethod]
+		public async Task GetFlightPlanAsync_ReturnsFlightPlan()
+		{
+			var flightPlan = new FlightPlan()
+			{
+				Id = "1a2b"
+			};
+			var mockRestClient = RestSharpMocks.BuildMockRestClient(HttpStatusCode.OK, "flightPlan", flightPlan);
+			var client = new Client("apitoken", "username", mockRestClient.Object);
+
+			var result = await client.GetFlightPlanAsync(flightPlan.Id);
+
+			mockRestClient.Verify(m => m.ExecuteAsync(It.Is<IRestRequest>(request => request.Resource.Contains(flightPlan.Id)), It.IsAny<CancellationToken>()), Times.Once);
+			Assert.IsNotNull(result);
+		}
+
+		[TestMethod]
+		public async Task SubmitFlightPlanAsync_ReturnsFlightPlan()
+		{
+			var flightPlan = new FlightPlan()
+			{
+				Id = "1a2b",
+				Ship = "3c4e",
+				Departure = "AB",
+				Destination = "CD"
+			};
+			var mockRestClient = RestSharpMocks.BuildMockRestClient(HttpStatusCode.OK, "flightPlan", flightPlan);
+			var client = new Client("apitoken", "username", mockRestClient.Object);
+
+			var result = await client.SubmitFightPlanAsync(flightPlan.Ship, flightPlan.Destination);
+
+			mockRestClient.Verify(m => m.ExecuteAsync(It.Is<IRestRequest>(request =>
+				ContainsParameter(request, "shipId", flightPlan.Ship) &&
+				ContainsParameter(request, "destination", flightPlan.Destination))
+				, It.IsAny<CancellationToken>()), Times.Once);
+			Assert.IsNotNull(result);
+		}
+
+		#endregion Flight Plans
+
 		#region Private Methods
 
 		private bool ContainsParameter(IRestRequest request, string name, string value)

@@ -37,5 +37,11 @@ namespace MerchantExpanse.SpaceTraders.Contracts
 		Task<Order> PurchaseGood(string shipId, string good, int quantity);
 
 		Task<Order> SellGood(string shipId, string good, int quantity);
+
+		Task<IEnumerable<PublicFlightPlan>> GetFlightPlansAsync(string systemSymbol);
+
+		Task<FlightPlan> GetFlightPlanAsync(string flightPlanId);
+
+		Task<FlightPlan> SubmitFightPlanAsync(string shipId, string destinationId);
 	}
 }

@@ -196,5 +196,35 @@ namespace MerchantExpanse.SpaceTraders
 		}
 
 		#endregion Market
+
+		#region Flight Plans
+
+		public async Task<IEnumerable<PublicFlightPlan>> GetFlightPlansAsync(string systemSymbol)
+		{
+			var request = new RestRequest($"game/systems/{systemSymbol}/flight-plans");
+			var response = await RestClient.ExecuteAsync(request);
+
+			return response.DeserializeContent<IEnumerable<PublicFlightPlan>>("flightPlans");
+		}
+
+		public async Task<FlightPlan> GetFlightPlanAsync(string flightPlanId)
+		{
+			var request = new RestRequest($"users/{Username}/flight-plans/{flightPlanId}");
+			var response = await RestClient.ExecuteAsync(request);
+
+			return response.DeserializeContent<FlightPlan>("flightPlan");
+		}
+
+		public async Task<FlightPlan> SubmitFightPlanAsync(string shipId, string destinationId)
+		{
+			var request = new RestRequest($"users/{Username}/flight-plans", Method.POST);
+			request.AddParameter("shipId", shipId);
+			request.AddParameter("destination", destinationId);
+			var response = await RestClient.ExecuteAsync(request);
+
+			return response.DeserializeContent<FlightPlan>("flightPlan");
+		}
+
+		#endregion Flight Plans
 	}
 }
