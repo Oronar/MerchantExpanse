@@ -527,6 +527,24 @@ namespace MerchantExpanse.SpaceTraders.Tests
 			Assert.IsNotNull(result);
 		}
 
+		[TestMethod]
+		public async Task WarpShipAsync_ReturnsFlightPlan()
+		{
+			var flightPlan = new FlightPlan()
+			{
+				Ship = "1a2b"
+			};
+			var mockRestClient = RestSharpMocks.BuildMockRestClient(HttpStatusCode.OK, "flightPlan", flightPlan);
+			var client = new Client("apitoken", "username", mockRestClient.Object);
+
+			var result = await client.WarpShipAsync(flightPlan.Ship);
+
+			mockRestClient.Verify(m => m.ExecuteAsync(It.Is<IRestRequest>(request =>
+				ContainsParameter(request, "shipId", flightPlan.Ship))
+				, It.IsAny<CancellationToken>()), Times.Once);
+			Assert.IsNotNull(result);
+		}
+
 		#endregion Flight Plans
 
 		[TestMethod]

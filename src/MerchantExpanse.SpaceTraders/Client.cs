@@ -227,6 +227,15 @@ namespace MerchantExpanse.SpaceTraders
 			return response.DeserializeContent<FlightPlan>("flightPlan");
 		}
 
+		public async Task<FlightPlan> WarpShipAsync(string shipId)
+		{
+			var request = new RestRequest($"users/{Username}/warp-jump", Method.POST);
+			request.AddParameter("shipId", shipId);
+			var response = await RestClient.ExecuteAsync(request);
+
+			return response.DeserializeContent<FlightPlan>("flightPlan");
+		}
+
 		#endregion Flight Plans
 
 		public async Task<string> GetStatusAsync()
