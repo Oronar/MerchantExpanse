@@ -4,6 +4,15 @@ MerchantExpanse is a third-party .NET 5 API wrapper written for [SpaceTraders.io
 
 The Space Traders API and this wrapper are still in development and subject to frequent breaking!
 
+## Installation
+
+Using Visual Studio or the Nuget Package Manager Console install the `MerchantExpanse.SpaceTraders` package.
+
+```ps
+# In Nuget Package Manager Console
+Install-Package MerchantExpanse.SpaceTraders
+```
+
 ## Examples
 ```C#
 // Replace these with your own credentials
@@ -17,14 +26,15 @@ var client = ClientFactory.Initialize(apiToken, username);
 var user = await client.GetUserAsync();
 
 // Retrieve a list of your owned ships
-var ships = await client.GetShipsAsync(); 
+var ships = await client.GetShipsAsync();
 
 Console.WriteLine($"Username: {user.Username}");
 Console.WriteLine($"Credits: {user.Credits}");
 Console.WriteLine($"# of Ships: {ships.Count()}");
-
+```
+```C#
 // Register a new account with SpaceTraders
-var newClient = await ClientFactory.RegisterAsync("john_test_account");
+var newClient = await ClientFactory.RegisterAsync("test_account"); // Pick a unique name!
 Console.WriteLine($"Username: {newClient.Username}");
 Console.WriteLine($"Token: {newClient.ApiToken}"); // Make sure to store this token somewhere safe!
 ```
