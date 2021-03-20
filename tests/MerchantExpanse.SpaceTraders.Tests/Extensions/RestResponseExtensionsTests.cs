@@ -22,6 +22,16 @@ namespace MerchantExpanse.SpaceTraders.Tests.Extensions
 		}
 
 		[TestMethod]
+		public void DeserializeContent_WithStatusOk_WithNoPropertyName_ReturnsObject()
+		{
+			var mockResponse = RestSharpMocks.BuildMockRestResponse(HttpStatusCode.OK, new TestObject()).Object;
+
+			var result = mockResponse.DeserializeContent<TestObject>();
+
+			Assert.IsNotNull(result);
+		}
+
+		[TestMethod]
 		public void DeserializeContent_WithError_ThrowsApiException()
 		{
 			var propertyName = "error";

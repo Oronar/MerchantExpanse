@@ -467,6 +467,30 @@ namespace MerchantExpanse.SpaceTraders.Tests
 			Assert.AreEqual(expectedCredits, result.Credits);
 		}
 
+		[TestMethod]
+		public async Task JettisonCargoAsync_ReturnsJettisonedCargo()
+		{
+			var cargo = new JettisonedCargo()
+			{
+				Good = "FUEL",
+				QuantityRemaining = 1,
+				ShipId = "1a2b"
+			};
+
+			var mockRestClient = RestSharpMocks.BuildMockRestClient(HttpStatusCode.OK, cargo);
+			var client = new Client("apitoken", "username", mockRestClient.Object);
+
+			var result = await client.JettisonCargoAsync(cargo.ShipId, cargo.Good, 1);
+
+			mockRestClient.Verify(m => m.ExecuteAsync(It.Is<IRestRequest>(request =>
+				request.Resource.Contains(cargo.ShipId) &&
+				ContainsParameter(request, "good", cargo.Good) &&
+				ContainsParameter(request, "quantity", 1.ToString()))
+				, It.IsAny<CancellationToken>()), Times.Once);
+
+			Assert.IsNotNull(result);
+		}
+
 		#endregion Marketplace
 
 		#region Flight Plans

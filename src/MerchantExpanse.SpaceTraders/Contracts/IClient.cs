@@ -6,6 +6,8 @@ namespace MerchantExpanse.SpaceTraders.Contracts
 {
 	public interface IClient
 	{
+		Task<string> GetStatusAsync();
+
 		Task<User> GetUserAsync();
 
 		Task<IEnumerable<Loan>> GetLoansAsync();
@@ -38,6 +40,8 @@ namespace MerchantExpanse.SpaceTraders.Contracts
 
 		Task<Order> SellGoodAsync(string shipId, string good, int quantity);
 
+		Task<JettisonedCargo> JettisonCargoAsync(string shipId, string good, int quantity);
+
 		Task<IEnumerable<PublicFlightPlan>> GetFlightPlansAsync(string systemSymbol);
 
 		Task<FlightPlan> GetFlightPlanAsync(string flightPlanId);
@@ -45,7 +49,5 @@ namespace MerchantExpanse.SpaceTraders.Contracts
 		Task<FlightPlan> SubmitFightPlanAsync(string shipId, string destinationId);
 
 		Task<FlightPlan> WarpShipAsync(string shipId);
-
-		Task<string> GetStatusAsync();
 	}
 }

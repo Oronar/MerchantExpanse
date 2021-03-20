@@ -24,6 +24,14 @@ namespace MerchantExpanse.SpaceTraders
 			RestClient = restClient ?? throw new ArgumentNullException(nameof(restClient));
 		}
 
+		public async Task<string> GetStatusAsync()
+		{
+			var request = new RestRequest("game/status");
+			var response = await RestClient.ExecuteAsync(request);
+
+			return response.DeserializeContent<string>("status");
+		}
+
 		public async Task<User> GetUserAsync()
 		{
 			var request = new RestRequest($"users/{Username}");
@@ -197,6 +205,16 @@ namespace MerchantExpanse.SpaceTraders
 			return result;
 		}
 
+		public async Task<JettisonedCargo> JettisonCargoAsync(string shipId, string good, int quantity)
+		{
+			var request = new RestRequest($"users/{Username}/ships/{shipId}/jettison", Method.PUT);
+			request.AddParameter("good", good);
+			request.AddParameter("quantity", quantity.ToString());
+			var response = await RestClient.ExecuteAsync(request);
+
+			return response.DeserializeContent<JettisonedCargo>();
+		}
+
 		#endregion Market
 
 		#region Flight Plans
@@ -237,13 +255,5 @@ namespace MerchantExpanse.SpaceTraders
 		}
 
 		#endregion Flight Plans
-
-		public async Task<string> GetStatusAsync()
-		{
-			var request = new RestRequest("game/status");
-			var response = await RestClient.ExecuteAsync(request);
-
-			return response.DeserializeContent<string>("status");
-		}
 	}
 }

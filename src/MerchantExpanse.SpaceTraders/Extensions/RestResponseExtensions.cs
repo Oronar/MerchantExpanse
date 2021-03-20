@@ -7,13 +7,13 @@ namespace MerchantExpanse.SpaceTraders.Extensions
 {
 	public static class RestResponseExtensions
 	{
-		public static T DeserializeContent<T>(this IRestResponse response, string propertyName)
+		public static T DeserializeContent<T>(this IRestResponse response, string propertyName = null)
 		{
 			var jobject = JObject.Parse(response.Content);
 
 			if ((int)response.StatusCode >= 200 && (int)response.StatusCode < 300)
 			{
-				return jobject[propertyName].ToObject<T>();
+				return (jobject[propertyName ?? string.Empty] ?? jobject).ToObject<T>();
 			}
 
 			throw new ApiException(GetError(jobject));
