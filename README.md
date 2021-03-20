@@ -6,12 +6,17 @@ The Space Traders API and this wrapper are still in development and subject to f
 
 ## Installation
 
-Using Visual Studio or the Nuget Package Manager Console install the `MerchantExpanse.SpaceTraders` package.
+Using the Nuget Package Manager in Visual Studio, dotnet CLI tool, or the Nuget Package Manager Console install the `MerchantExpanse.SpaceTraders` package.
 
 ```ps
-# In Nuget Package Manager Console
+# Using dotnet
+dotnet add <your-project>.csproj package MerchantExpanse.SpaceTraders
+```
+```ps
+# In Visual Studio select Tools > NuGet Package Manger > Package Manager Console
 Install-Package MerchantExpanse.SpaceTraders
 ```
+
 
 ## Examples
 ```C#
