@@ -112,7 +112,7 @@ namespace MerchantExpanse.SpaceTraders
 
 		public async Task ScrapShipAsync(string shipId)
 		{
-			var request = new RestRequest($"users/{Username}/ships/{shipId}");
+			var request = new RestRequest($"users/{Username}/ships/{shipId}", Method.DELETE);
 
 			var response = await RestClient.ExecuteAsync(request);
 

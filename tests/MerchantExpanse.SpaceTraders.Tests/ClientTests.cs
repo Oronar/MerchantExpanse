@@ -1,12 +1,11 @@
+using MerchantExpanse.SpaceTraders.Constants;
 using MerchantExpanse.SpaceTraders.Models;
 using MerchantExpanse.SpaceTraders.Tests.TestHelpers;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
-using Newtonsoft.Json;
 using RestSharp;
 using System;
 using System.Collections.Generic;
-using System.Dynamic;
 using System.Linq;
 using System.Net;
 using System.Threading;
@@ -15,7 +14,7 @@ using System.Threading.Tasks;
 namespace MerchantExpanse.SpaceTraders.Tests
 {
 	[TestClass]
-	public class ClientTests
+	public partial class ClientTests
 	{
 		#region Client
 
@@ -45,23 +44,35 @@ namespace MerchantExpanse.SpaceTraders.Tests
 
 		#endregion Client
 
+		[TestMethod]
+		public async Task GetStatusAsync_ReturnsStatus()
+		{
+			var status = "spacetraders is currently online and available to play";
+			var builder = new TestBuilder()
+				.WithResource("game/status")
+				.WithPayload("status", status);
+			var client = builder.Build();
+
+			var result = await client.GetStatusAsync();
+
+			builder.MockRestClient.Verify();
+			Assert.AreEqual(status, result);
+		}
+
 		#region User
 
 		[TestMethod]
 		public async Task GetUserAsync_ReturnsUser()
 		{
-			var user = new User()
-			{
-				Username = "test"
-			};
-			var mockRestClient = RestSharpMocks.BuildMockRestClient(HttpStatusCode.OK, "user", user);
-			var client = new Client("apitoken", "username", mockRestClient.Object);
+			var builder = new TestBuilder()
+				.WithResource($"users/username")
+				.WithPayload("user", new User());
+			var client = builder.Build();
 
 			var result = await client.GetUserAsync();
 
-			mockRestClient.Verify();
+			builder.MockRestClient.Verify();
 			Assert.IsNotNull(result);
-			Assert.AreEqual(user.Username, result.Username);
 		}
 
 		#endregion User
@@ -74,22 +85,17 @@ namespace MerchantExpanse.SpaceTraders.Tests
 			var loans = new List<Loan>()
 			{
 				new Loan()
-				{
-					Id = "1",
-					Due = DateTime.UtcNow,
-					RepaymentAmount = 1000,
-					Status = "CURRENT",
-					Type = "STARTUP"
-				}
 			};
-			var mockRestClient = RestSharpMocks.BuildMockRestClient(HttpStatusCode.OK, "loans", loans);
-			var client = new Client("apitoken", "username", mockRestClient.Object);
+			var builder = new TestBuilder()
+				.WithResource("users/username/loans")
+				.WithPayload("loans", loans);
+
+			var client = builder.Build();
 
 			var result = await client.GetLoansAsync();
 
-			mockRestClient.Verify();
+			builder.MockRestClient.Verify();
 			Assert.IsNotNull(result);
-			Assert.AreEqual(1, result.Count());
 		}
 
 		[TestMethod]
@@ -98,49 +104,35 @@ namespace MerchantExpanse.SpaceTraders.Tests
 			var loans = new List<AvailableLoan>()
 			{
 				new AvailableLoan()
-				{
-					Amount = 1000,
-					CollateralRequired = false,
-					Rate = 40,
-					TermInDays = 2,
-					Type = "STARTUP"
-				}
 			};
-			var mockRestClient = RestSharpMocks.BuildMockRestClient(HttpStatusCode.OK, "loans", loans);
-			var client = new Client("apitoken", "username", mockRestClient.Object);
+			var builder = new TestBuilder()
+				.WithResource("game/loans")
+				.WithPayload("loans", loans);
+
+			var client = builder.Build();
 
 			var result = await client.GetAvailableLoansAsync();
 
-			mockRestClient.Verify();
+			builder.MockRestClient.Verify();
 			Assert.IsNotNull(result);
-			Assert.AreEqual(1, result.Count());
 		}
 
 		[TestMethod]
 		public async Task TakeOutLoanAsync_ReturnsUser()
 		{
-			var expectedLoanType = "STARTUP";
-			var user = new User()
-			{
-				Loans = new List<Loan>()
-				{
-					new Loan()
-					{
-						Type = expectedLoanType
-					}
-				}
-			};
-			var mockRestClient = RestSharpMocks.BuildMockRestClient(HttpStatusCode.OK, "user", user);
-			var client = new Client("apitoken", "username", mockRestClient.Object);
+			var expectedLoanType = LoanTypes.Startup;
+			var builder = new TestBuilder()
+				.WithMethod(Method.POST)
+				.WithResource("users/username/loans")
+				.WithPayload("user", new User())
+				.WithParameter("type", expectedLoanType);
 
-			var result = await client.TakeOutLoanAsync("STARTUP");
+			var client = builder.Build();
 
-			mockRestClient.Verify(m => m.ExecuteAsync(It.Is<IRestRequest>(request =>
-				ContainsParameter(request, "type", expectedLoanType))
-				, It.IsAny<CancellationToken>()), Times.Once);
+			var result = await client.TakeOutLoanAsync(expectedLoanType);
 
+			builder.MockRestClient.Verify();
 			Assert.IsNotNull(result);
-			Assert.AreEqual(1, result.Loans.Count());
 		}
 
 		#endregion Loans
@@ -154,12 +146,15 @@ namespace MerchantExpanse.SpaceTraders.Tests
 			{
 				Id = "1a2b"
 			};
-			var mockRestClient = RestSharpMocks.BuildMockRestClient(HttpStatusCode.OK, "ship", ship);
-			var client = new Client("apitoken", "username", mockRestClient.Object);
+			var builder = new TestBuilder()
+				.WithResource($"users/username/ships/{ship.Id}")
+				.WithPayload("user", new User());
+
+			var client = builder.Build();
 
 			var result = await client.GetShipAsync(ship.Id);
 
-			mockRestClient.Verify(m => m.ExecuteAsync(It.Is<IRestRequest>(request => request.Resource.Contains(ship.Id)), It.IsAny<CancellationToken>()), Times.Once);
+			builder.MockRestClient.Verify();
 			Assert.IsNotNull(result);
 		}
 
@@ -169,18 +164,16 @@ namespace MerchantExpanse.SpaceTraders.Tests
 			var ships = new List<Ship>()
 			{
 				new Ship()
-				{
-					Id = "1"
-				}
 			};
-			var mockRestClient = RestSharpMocks.BuildMockRestClient(HttpStatusCode.OK, "ships", ships);
-			var client = new Client("apitoken", "username", mockRestClient.Object);
+			var builder = new TestBuilder()
+				.WithResource("users/username/ships")
+				.WithPayload("ships", ships);
+			var client = builder.Build();
 
 			var result = await client.GetShipsAsync();
 
-			mockRestClient.Verify();
+			builder.MockRestClient.Verify();
 			Assert.IsNotNull(result);
-			Assert.AreEqual(1, result.Count());
 		}
 
 		[TestMethod]
@@ -189,18 +182,16 @@ namespace MerchantExpanse.SpaceTraders.Tests
 			var ships = new List<Ship>()
 			{
 				new Ship()
-				{
-					Id = "1"
-				}
 			};
-			var mockRestClient = RestSharpMocks.BuildMockRestClient(HttpStatusCode.OK, "ships", ships);
-			var client = new Client("apitoken", "username", mockRestClient.Object);
+			var builder = new TestBuilder()
+				.WithResource("game/ships")
+				.WithPayload("ships", ships);
+			var client = builder.Build();
 
 			var result = await client.GetAvailableShipsAsync();
 
-			mockRestClient.Verify();
+			builder.MockRestClient.Verify();
 			Assert.IsNotNull(result);
-			Assert.AreEqual(1, result.Count());
 		}
 
 		[TestMethod]
@@ -212,17 +203,16 @@ namespace MerchantExpanse.SpaceTraders.Tests
 				new Ship()
 			};
 
-			var mockRestClient = RestSharpMocks.BuildMockRestClient(HttpStatusCode.OK, "ships", ships);
-			var client = new Client("apitoken", "username", mockRestClient.Object);
+			var builder = new TestBuilder()
+				.WithResource("game/ships")
+				.WithPayload("ships", ships)
+				.WithParameter("class", expectedShipClass);
+			var client = builder.Build();
 
 			var result = await client.GetAvailableShipsAsync(expectedShipClass);
 
-			mockRestClient.Verify(m => m.ExecuteAsync(It.Is<IRestRequest>(request =>
-				ContainsParameter(request, "class", expectedShipClass))
-				, It.IsAny<CancellationToken>()), Times.Once);
-
+			builder.MockRestClient.Verify();
 			Assert.IsNotNull(result);
-			Assert.AreEqual(1, result.Count());
 		}
 
 		[TestMethod]
@@ -231,38 +221,33 @@ namespace MerchantExpanse.SpaceTraders.Tests
 			var expectedLocation = "OE";
 			var expectedType = "OE-1";
 
-			var user = new User()
-			{
-				Ships = new List<Ship>()
-				{
-					new Ship()
-				}
-			};
-			var mockRestClient = RestSharpMocks.BuildMockRestClient(HttpStatusCode.Created, "user", user);
-			var client = new Client("apitoken", "username", mockRestClient.Object);
+			var builder = new TestBuilder()
+				.WithMethod(Method.POST)
+				.WithResource("users/username/ships")
+				.WithPayload("user", new User())
+				.WithParameter("location", expectedLocation)
+				.WithParameter("type", expectedType);
+			var client = builder.Build();
 
 			var result = await client.PurchaseShipAsync(expectedLocation, expectedType);
 
-			mockRestClient.Verify(m => m.ExecuteAsync(It.Is<IRestRequest>(request =>
-				ContainsParameter(request, "location", expectedLocation)
-				&& ContainsParameter(request, "type", expectedType))
-				, It.IsAny<CancellationToken>()), Times.Once);
-
+			builder.MockRestClient.Verify();
 			Assert.IsNotNull(result);
-			Assert.AreEqual(1, result.Ships.Count());
 		}
 
 		[TestMethod]
 		public async Task ScrapShipAsync_Returns()
 		{
 			var expectedShipId = "1a2b";
-			var mockRestClient = RestSharpMocks.BuildMockRestClient(HttpStatusCode.OK, "success", new SuccessResponse());
-			var client = new Client("apitoken", "username", mockRestClient.Object);
+			var builder = new TestBuilder()
+				.WithMethod(Method.DELETE)
+				.WithResource($"users/username/ships/{expectedShipId}")
+				.WithPayload("success", new SuccessResponse());
+			var client = builder.Build();
 
 			await client.ScrapShipAsync(expectedShipId);
 
-			mockRestClient.Verify(m => m.ExecuteAsync(It.Is<IRestRequest>(request => request.Resource.Contains(expectedShipId))
-				, It.IsAny<CancellationToken>()), Times.Once);
+			builder.MockRestClient.Verify();
 		}
 
 		#endregion Ships
@@ -276,14 +261,16 @@ namespace MerchantExpanse.SpaceTraders.Tests
 			{
 				new StarSystem()
 			};
-			var mockRestClient = RestSharpMocks.BuildMockRestClient(HttpStatusCode.OK, "systems", systems);
-			var client = new Client("apitoken", "username", mockRestClient.Object);
+
+			var builder = new TestBuilder()
+				.WithResource($"game/systems")
+				.WithPayload("systems", systems);
+			var client = builder.Build();
 
 			var result = await client.GetSystemsAsync();
 
-			mockRestClient.Verify();
+			builder.MockRestClient.Verify();
 			Assert.IsNotNull(result);
-			Assert.AreEqual(1, result.Count());
 		}
 
 		#endregion Systems
@@ -298,16 +285,15 @@ namespace MerchantExpanse.SpaceTraders.Tests
 			{
 				new Location()
 			};
-			var mockRestClient = RestSharpMocks.BuildMockRestClient(HttpStatusCode.OK, "locations", locations);
-			var client = new Client("apitoken", "username", mockRestClient.Object);
+			var builder = new TestBuilder()
+				.WithResource($"game/systems/{expectedSystemSymbol}/locations")
+				.WithPayload("locations", locations);
+			var client = builder.Build();
 
 			var result = await client.GetSystemLocations(expectedSystemSymbol);
 
-			mockRestClient.Verify(m => m.ExecuteAsync(It.Is<IRestRequest>(request => request.Resource.Contains(expectedSystemSymbol))
-				, It.IsAny<CancellationToken>()), Times.Once);
-
+			builder.MockRestClient.Verify();
 			Assert.IsNotNull(result);
-			Assert.AreEqual(1, result.Count());
 		}
 
 		[TestMethod]
@@ -318,28 +304,16 @@ namespace MerchantExpanse.SpaceTraders.Tests
 				Symbol = "OE-PM-TR"
 			};
 			var expectedShips = 10;
-			var mockResponse = new Mock<IRestResponse>();
-			var payload = new ExpandoObject() as IDictionary<string, object>;
-			payload.Add("location", location);
-			payload.Add("dockedShips", expectedShips);
 
-			mockResponse.SetupGet(m => m.Content)
-				.Returns(JsonConvert.SerializeObject(payload));
-			mockResponse.SetupGet(m => m.StatusCode)
-				.Returns(HttpStatusCode.OK);
-
-			var mockRestClient = new Mock<IRestClient>();
-
-			mockRestClient.Setup(m => m.ExecuteAsync(It.IsAny<IRestRequest>(), It.IsAny<CancellationToken>()))
-				.ReturnsAsync(mockResponse.Object);
-
-			var client = new Client("apitoken", "username", mockRestClient.Object);
+			var builder = new TestBuilder()
+				.WithResource($"game/locations/{location.Symbol}")
+				.WithPayload("location", location)
+				.WithPayload("dockedShips", expectedShips);
+			var client = builder.Build();
 
 			var result = await client.GetLocationAsync(location.Symbol);
 
-			mockRestClient.Verify(m => m.ExecuteAsync(It.Is<IRestRequest>(request => request.Resource.Contains(location.Symbol))
-				, It.IsAny<CancellationToken>()), Times.Once);
-
+			builder.MockRestClient.Verify();
 			Assert.IsNotNull(result);
 			Assert.AreEqual(expectedShips, result.DockedShips);
 		}
@@ -355,17 +329,16 @@ namespace MerchantExpanse.SpaceTraders.Tests
 					new ShipPlate()
 				}
 			};
-			var mockRestClient = RestSharpMocks.BuildMockRestClient(HttpStatusCode.OK, "location", location);
-			var client = new Client("apitoken", "username", mockRestClient.Object);
+			var builder = new TestBuilder()
+				.WithResource($"game/locations/{location.Symbol}/ships")
+				.WithPayload("location", location);
+			var client = builder.Build();
 
 			var result = await client.GetLocationShipsAsync(location.Symbol);
 
-			mockRestClient.Verify(m => m.ExecuteAsync(It.Is<IRestRequest>(request => request.Resource.Contains(location.Symbol))
-				, It.IsAny<CancellationToken>()), Times.Once);
-
+			builder.MockRestClient.Verify();
 			Assert.IsNotNull(result);
 			Assert.AreEqual(location.Ships.Count(), result.DockedShips);
-			Assert.AreEqual(1, result.Ships.Count());
 		}
 
 		#endregion Locations
@@ -383,49 +356,41 @@ namespace MerchantExpanse.SpaceTraders.Tests
 					new Good()
 				}
 			};
-			var mockRestClient = RestSharpMocks.BuildMockRestClient(HttpStatusCode.OK, "location", location);
-			var client = new Client("apitoken", "username", mockRestClient.Object);
+			var builder = new TestBuilder()
+				.WithResource($"game/locations/{location.Symbol}/marketplace")
+				.WithPayload("location", location);
+			var client = builder.Build();
 
 			var result = await client.GetMarketplaceAsync(location.Symbol);
 
-			mockRestClient.Verify(m => m.ExecuteAsync(It.Is<IRestRequest>(request => request.Resource.Contains(location.Symbol)), It.IsAny<CancellationToken>()), Times.Once);
+			builder.MockRestClient.Verify();
 			Assert.IsNotNull(result);
-			Assert.AreEqual(1, location.Marketplace.Count());
 		}
 
 		[TestMethod]
 		public async Task PurchaseGoodAsync_ReturnsOrder()
 		{
-			var order = new Order();
+			var order = new Order()
+			{
+				Good = GoodTypes.Fuel,
+				Quantity = 100
+			};
 			var expectedShipId = "1a2b";
-			var expectedGood = "metals";
-			var expectedQuantity = 100;
 			var expectedCredits = 10000;
-			var mockResponse = new Mock<IRestResponse>();
-			var payload = new ExpandoObject() as IDictionary<string, object>;
-			payload.Add("order", order);
-			payload.Add("credits", expectedCredits);
 
-			mockResponse.SetupGet(m => m.Content)
-				.Returns(JsonConvert.SerializeObject(payload));
-			mockResponse.SetupGet(m => m.StatusCode)
-				.Returns(HttpStatusCode.OK);
+			var builder = new TestBuilder()
+				.WithMethod(Method.POST)
+				.WithResource("users/username/purchase-orders")
+				.WithPayload("order", order)
+				.WithPayload("credits", expectedCredits)
+				.WithParameter("shipId", expectedShipId)
+				.WithParameter("good", order.Good)
+				.WithParameter("quantity", order.Quantity.ToString());
+			var client = builder.Build();
 
-			var mockRestClient = new Mock<IRestClient>();
+			var result = await client.PurchaseGoodAsync(expectedShipId, order.Good, order.Quantity);
 
-			mockRestClient.Setup(m => m.ExecuteAsync(It.IsAny<IRestRequest>(), It.IsAny<CancellationToken>()))
-				.ReturnsAsync(mockResponse.Object);
-
-			var client = new Client("apitoken", "username", mockRestClient.Object);
-
-			var result = await client.PurchaseGoodAsync(expectedShipId, expectedGood, expectedQuantity);
-
-			mockRestClient.Verify(m => m.ExecuteAsync(It.Is<IRestRequest>(request =>
-				ContainsParameter(request, "shipId", expectedShipId) &&
-				ContainsParameter(request, "good", expectedGood) &&
-				ContainsParameter(request, "quantity", expectedQuantity.ToString()))
-				, It.IsAny<CancellationToken>()), Times.Once);
-
+			builder.MockRestClient.Verify();
 			Assert.IsNotNull(result);
 			Assert.AreEqual(expectedCredits, result.Credits);
 		}
@@ -433,36 +398,27 @@ namespace MerchantExpanse.SpaceTraders.Tests
 		[TestMethod]
 		public async Task SellGoodAsync_ReturnsOrder()
 		{
-			var order = new Order();
+			var order = new Order()
+			{
+				Good = GoodTypes.Fuel,
+				Quantity = 100
+			};
 			var expectedShipId = "1a2b";
-			var expectedGood = "metals";
-			var expectedQuantity = 100;
 			var expectedCredits = 10000;
-			var mockResponse = new Mock<IRestResponse>();
-			var payload = new ExpandoObject() as IDictionary<string, object>;
-			payload.Add("order", order);
-			payload.Add("credits", expectedCredits);
 
-			mockResponse.SetupGet(m => m.Content)
-				.Returns(JsonConvert.SerializeObject(payload));
-			mockResponse.SetupGet(m => m.StatusCode)
-				.Returns(HttpStatusCode.OK);
+			var builder = new TestBuilder()
+				.WithMethod(Method.POST)
+				.WithResource("users/username/sell-orders")
+				.WithPayload("order", order)
+				.WithPayload("credits", expectedCredits)
+				.WithParameter("shipId", expectedShipId)
+				.WithParameter("good", order.Good)
+				.WithParameter("quantity", order.Quantity.ToString());
+			var client = builder.Build();
 
-			var mockRestClient = new Mock<IRestClient>();
+			var result = await client.SellGoodAsync(expectedShipId, order.Good, order.Quantity);
 
-			mockRestClient.Setup(m => m.ExecuteAsync(It.IsAny<IRestRequest>(), It.IsAny<CancellationToken>()))
-				.ReturnsAsync(mockResponse.Object);
-
-			var client = new Client("apitoken", "username", mockRestClient.Object);
-
-			var result = await client.SellGoodAsync(expectedShipId, expectedGood, expectedQuantity);
-
-			mockRestClient.Verify(m => m.ExecuteAsync(It.Is<IRestRequest>(request =>
-				ContainsParameter(request, "shipId", expectedShipId) &&
-				ContainsParameter(request, "good", expectedGood) &&
-				ContainsParameter(request, "quantity", expectedQuantity.ToString()))
-				, It.IsAny<CancellationToken>()), Times.Once);
-
+			builder.MockRestClient.Verify();
 			Assert.IsNotNull(result);
 			Assert.AreEqual(expectedCredits, result.Credits);
 		}
@@ -503,14 +459,15 @@ namespace MerchantExpanse.SpaceTraders.Tests
 			{
 				new PublicFlightPlan()
 			};
-			var mockRestClient = RestSharpMocks.BuildMockRestClient(HttpStatusCode.OK, "flightPlans", flightPlans);
-			var client = new Client("apitoken", "username", mockRestClient.Object);
+			var builder = new TestBuilder()
+				.WithResource($"game/systems/{expectedSystemSymbol}/flight-plans")
+				.WithPayload("flightPlans", flightPlans);
+			var client = builder.Build();
 
 			var result = await client.GetFlightPlansAsync(expectedSystemSymbol);
 
-			mockRestClient.Verify(m => m.ExecuteAsync(It.Is<IRestRequest>(request => request.Resource.Contains(expectedSystemSymbol)), It.IsAny<CancellationToken>()), Times.Once);
+			builder.MockRestClient.Verify();
 			Assert.IsNotNull(result);
-			Assert.AreEqual(1, result.Count());
 		}
 
 		[TestMethod]
@@ -520,12 +477,14 @@ namespace MerchantExpanse.SpaceTraders.Tests
 			{
 				Id = "1a2b"
 			};
-			var mockRestClient = RestSharpMocks.BuildMockRestClient(HttpStatusCode.OK, "flightPlan", flightPlan);
-			var client = new Client("apitoken", "username", mockRestClient.Object);
+			var builder = new TestBuilder()
+				.WithResource($"users/username/flight-plans/{flightPlan.Id}")
+				.WithPayload("flightplan", flightPlan);
+			var client = builder.Build();
 
 			var result = await client.GetFlightPlanAsync(flightPlan.Id);
 
-			mockRestClient.Verify(m => m.ExecuteAsync(It.Is<IRestRequest>(request => request.Resource.Contains(flightPlan.Id)), It.IsAny<CancellationToken>()), Times.Once);
+			builder.MockRestClient.Verify();
 			Assert.IsNotNull(result);
 		}
 
@@ -539,15 +498,17 @@ namespace MerchantExpanse.SpaceTraders.Tests
 				Departure = "AB",
 				Destination = "CD"
 			};
-			var mockRestClient = RestSharpMocks.BuildMockRestClient(HttpStatusCode.OK, "flightPlan", flightPlan);
-			var client = new Client("apitoken", "username", mockRestClient.Object);
+			var builder = new TestBuilder()
+				.WithMethod(Method.POST)
+				.WithResource($"users/username/flight-plans")
+				.WithPayload("flightplan", flightPlan)
+				.WithParameter("shipId", flightPlan.Ship)
+				.WithParameter("destination", flightPlan.Destination);
+			var client = builder.Build();
 
 			var result = await client.SubmitFightPlanAsync(flightPlan.Ship, flightPlan.Destination);
 
-			mockRestClient.Verify(m => m.ExecuteAsync(It.Is<IRestRequest>(request =>
-				ContainsParameter(request, "shipId", flightPlan.Ship) &&
-				ContainsParameter(request, "destination", flightPlan.Destination))
-				, It.IsAny<CancellationToken>()), Times.Once);
+			builder.MockRestClient.Verify();
 			Assert.IsNotNull(result);
 		}
 
@@ -558,32 +519,20 @@ namespace MerchantExpanse.SpaceTraders.Tests
 			{
 				Ship = "1a2b"
 			};
-			var mockRestClient = RestSharpMocks.BuildMockRestClient(HttpStatusCode.OK, "flightPlan", flightPlan);
-			var client = new Client("apitoken", "username", mockRestClient.Object);
+			var builder = new TestBuilder()
+				.WithMethod(Method.POST)
+				.WithResource($"users/username/warp-jump")
+				.WithPayload("flightplan", flightPlan)
+				.WithParameter("shipId", flightPlan.Ship);
+			var client = builder.Build();
 
 			var result = await client.WarpShipAsync(flightPlan.Ship);
 
-			mockRestClient.Verify(m => m.ExecuteAsync(It.Is<IRestRequest>(request =>
-				ContainsParameter(request, "shipId", flightPlan.Ship))
-				, It.IsAny<CancellationToken>()), Times.Once);
+			builder.MockRestClient.Verify();
 			Assert.IsNotNull(result);
 		}
 
 		#endregion Flight Plans
-
-		[TestMethod]
-		public async Task GetStatusAsync_ReturnsStatus()
-		{
-			var status = "spacetraders is currently online and available to play";
-			var mockRestClient = RestSharpMocks.BuildMockRestClient(HttpStatusCode.OK, "status", status);
-			var client = new Client("apitoken", "username", mockRestClient.Object);
-
-			var result = await client.GetStatusAsync();
-
-			mockRestClient.Verify();
-			Assert.IsNotNull(result);
-			Assert.AreEqual(status, result);
-		}
 
 		#region Private Methods
 

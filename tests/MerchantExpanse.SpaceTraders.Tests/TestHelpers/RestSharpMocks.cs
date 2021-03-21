@@ -36,18 +36,6 @@ namespace MerchantExpanse.SpaceTraders.Tests.TestHelpers
 			return mockResponse;
 		}
 
-		public static Mock<IRestClient> BuildMockRestClient(HttpStatusCode status, string propertyName, object data)
-		{
-			var mockRestClient = new Mock<IRestClient>();
-			var mockResponse = BuildMockRestResponse(status, propertyName, data);
-
-			mockRestClient.Setup(m => m.ExecuteAsync(It.IsAny<IRestRequest>(), It.IsAny<CancellationToken>()))
-				.ReturnsAsync(mockResponse.Object)
-				.Verifiable();
-
-			return mockRestClient;
-		}
-
 		public static Mock<IRestClient> BuildMockRestClient(HttpStatusCode status, object data)
 		{
 			var mockRestClient = new Mock<IRestClient>();
