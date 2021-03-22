@@ -1,8 +1,8 @@
 using MerchantExpanse.SpaceTraders.Constants;
 using MerchantExpanse.SpaceTraders.Models;
-using MerchantExpanse.SpaceTraders.Tests.TestHelpers;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
+using Newtonsoft.Json;
 using RestSharp;
 using System;
 using System.Collections.Generic;
@@ -433,7 +433,19 @@ namespace MerchantExpanse.SpaceTraders.Tests
 				ShipId = "1a2b"
 			};
 
-			var mockRestClient = RestSharpMocks.BuildMockRestClient(HttpStatusCode.OK, cargo);
+			var mockResponse = new Mock<IRestResponse>();
+
+			mockResponse.SetupGet(m => m.Content)
+				.Returns(JsonConvert.SerializeObject(cargo));
+			mockResponse.SetupGet(m => m.StatusCode)
+				.Returns(HttpStatusCode.OK);
+
+			var mockRestClient = new Mock<IRestClient>();
+
+			mockRestClient.Setup(m => m.ExecuteAsync(It.IsAny<IRestRequest>(), It.IsAny<CancellationToken>()))
+				.ReturnsAsync(mockResponse.Object)
+				.Verifiable();
+
 			var client = new Client("apitoken", "username", mockRestClient.Object);
 
 			var result = await client.JettisonCargoAsync(cargo.ShipId, cargo.Good, 1);
