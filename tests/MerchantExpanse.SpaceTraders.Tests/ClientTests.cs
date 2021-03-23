@@ -459,6 +459,35 @@ namespace MerchantExpanse.SpaceTraders.Tests
 			Assert.IsNotNull(result);
 		}
 
+		[TestMethod]
+		public async Task DepositCargoAsync_ReturnsDeposit()
+		{
+			var deposit = new Deposit()
+			{
+				Good = GoodTypes.Fuel,
+				Quantity = 100
+			};
+			var structure = new Structure();
+			var expectedShipId = "1a2b";
+			var expectedStructureId = "3c4d";
+
+			var builder = new TestBuilder()
+				.WithMethod(Method.POST)
+				.WithResource($"game/structures/{expectedStructureId}/deposit")
+				.WithPayload("deposit", deposit)
+				.WithPayload("structure", structure)
+				.WithParameter("shipId", expectedShipId)
+				.WithParameter("good", deposit.Good)
+				.WithParameter("quantity", deposit.Quantity.ToString());
+			var client = builder.Build();
+
+			var result = await client.DepositCargoAsync(expectedStructureId, expectedShipId, deposit.Good, deposit.Quantity);
+
+			builder.MockRestClient.Verify();
+			Assert.IsNotNull(result);
+			Assert.IsNotNull(result.Structure);
+		}
+
 		#endregion Marketplace
 
 		#region Flight Plans

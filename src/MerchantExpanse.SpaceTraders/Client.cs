@@ -215,6 +215,20 @@ namespace MerchantExpanse.SpaceTraders
 			return response.DeserializeContent<JettisonedCargo>();
 		}
 
+		public async Task<Deposit> DepositCargoAsync(string structureId, string shipId, string good, int quantity)
+		{
+			var request = new RestRequest($"game/structures/{structureId}/deposit", Method.POST);
+			request.AddParameter("shipId", shipId);
+			request.AddParameter("good", good);
+			request.AddParameter("quantity", quantity.ToString());
+			var response = await RestClient.ExecuteAsync(request);
+
+			var deposit = response.DeserializeContent<Deposit>("deposit");
+			deposit.Structure = response.DeserializeContent<Structure>("structure");
+
+			return deposit;
+		}
+
 		#endregion Market
 
 		#region Flight Plans

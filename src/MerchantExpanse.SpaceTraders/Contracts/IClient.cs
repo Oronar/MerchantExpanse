@@ -42,6 +42,8 @@ namespace MerchantExpanse.SpaceTraders.Contracts
 
 		Task<JettisonedCargo> JettisonCargoAsync(string shipId, string good, int quantity);
 
+		Task<Deposit> DepositCargoAsync(string structureId, string shipId, string good, int quantity);
+
 		Task<IEnumerable<PublicFlightPlan>> GetFlightPlansAsync(string systemSymbol);
 
 		Task<FlightPlan> GetFlightPlanAsync(string flightPlanId);
