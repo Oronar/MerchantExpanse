@@ -4,7 +4,7 @@
     <TargetFramework>net5.0</TargetFramework>
     <Authors>Oronar</Authors>
     <Company />
-    <Version>1.1.0</Version>
+    <Version>1.2.0</Version>
     <Description>A .NET 5 API wrapper for SpaceTraders.io</Description>
     <PackageProjectUrl>https://github.com/Oronar/MerchantExpanse</PackageProjectUrl>
     <RepositoryUrl>https://github.com/Oronar/MerchantExpanse</RepositoryUrl>
