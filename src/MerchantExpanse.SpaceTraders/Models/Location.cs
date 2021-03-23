@@ -17,6 +17,8 @@ namespace MerchantExpanse.SpaceTraders.Models
 		public IEnumerable<ShipPlate> Ships { get; set; }
 
 		public string Anomaly { get; set; }
+
+		public IEnumerable<string> Messages { get; set; }
 	}
 
 	public class LocationDetail : Location
