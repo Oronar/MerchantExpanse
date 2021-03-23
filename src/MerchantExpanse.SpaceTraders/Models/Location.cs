@@ -26,6 +26,8 @@ namespace MerchantExpanse.SpaceTraders.Models
 		public decimal AnsibleProgress { get; set; }
 
 		public int DockedShips { get; set; }
+
+		public IEnumerable<Structure> Structures { get; set; }
 	}
 
 	public class MarketLocation : Location
