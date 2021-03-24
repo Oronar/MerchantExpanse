@@ -575,6 +575,29 @@ namespace MerchantExpanse.SpaceTraders.Tests
 
 		#endregion Flight Plans
 
+		#region Structures
+
+		[TestMethod]
+		public async Task GetStructureAsync_ReturnsStructure()
+		{
+			var structure = new Structure()
+			{
+				Id = "1a2b"
+			};
+			var builder = new TestBuilder()
+				.WithResource($"game/structures/{structure.Id}")
+				.WithPayload("structure", structure);
+			var client = builder.Build();
+
+			var result = await client.GetStructureAsync(structure.Id);
+
+			builder.MockRestClient.Verify();
+			Assert.IsNotNull(result);
+		}
+
+
+		#endregion
+
 		#region Private Methods
 
 		private bool ContainsParameter(IRestRequest request, string name, string value)

@@ -51,5 +51,7 @@ namespace MerchantExpanse.SpaceTraders.Contracts
 		Task<FlightPlan> SubmitFightPlanAsync(string shipId, string destinationId);
 
 		Task<FlightPlan> WarpShipAsync(string shipId);
+
+		Task<Structure> GetStructureAsync(string structureId);
 	}
 }

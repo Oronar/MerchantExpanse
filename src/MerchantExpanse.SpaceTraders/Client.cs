@@ -269,5 +269,17 @@ namespace MerchantExpanse.SpaceTraders
 		}
 
 		#endregion Flight Plans
+
+		#region Structures
+
+		public async Task<Structure> GetStructureAsync(string structureId)
+		{
+			var request = new RestRequest($"game/structures/{structureId}");
+			var response = await RestClient.ExecuteAsync(request);
+
+			return response.DeserializeContent<Structure>("structure");
+		}
+
+		#endregion Structures
 	}
 }
