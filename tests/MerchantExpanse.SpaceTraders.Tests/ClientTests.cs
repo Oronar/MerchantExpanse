@@ -535,7 +535,7 @@ namespace MerchantExpanse.SpaceTraders.Tests
 			var flightPlan = new FlightPlan()
 			{
 				Id = "1a2b",
-				Ship = "3c4e",
+				ShipId = "3c4e",
 				Departure = "AB",
 				Destination = "CD"
 			};
@@ -543,11 +543,11 @@ namespace MerchantExpanse.SpaceTraders.Tests
 				.WithMethod(Method.POST)
 				.WithResource($"users/username/flight-plans")
 				.WithPayload("flightplan", flightPlan)
-				.WithParameter("shipId", flightPlan.Ship)
+				.WithParameter("shipId", flightPlan.ShipId)
 				.WithParameter("destination", flightPlan.Destination);
 			var client = builder.Build();
 
-			var result = await client.SubmitFightPlanAsync(flightPlan.Ship, flightPlan.Destination);
+			var result = await client.SubmitFightPlanAsync(flightPlan.ShipId, flightPlan.Destination);
 
 			builder.MockRestClient.Verify();
 			Assert.IsNotNull(result);
@@ -558,16 +558,16 @@ namespace MerchantExpanse.SpaceTraders.Tests
 		{
 			var flightPlan = new FlightPlan()
 			{
-				Ship = "1a2b"
+				ShipId = "1a2b"
 			};
 			var builder = new TestBuilder()
 				.WithMethod(Method.POST)
 				.WithResource($"users/username/warp-jump")
 				.WithPayload("flightplan", flightPlan)
-				.WithParameter("shipId", flightPlan.Ship);
+				.WithParameter("shipId", flightPlan.ShipId);
 			var client = builder.Build();
 
-			var result = await client.WarpShipAsync(flightPlan.Ship);
+			var result = await client.WarpShipAsync(flightPlan.ShipId);
 
 			builder.MockRestClient.Verify();
 			Assert.IsNotNull(result);

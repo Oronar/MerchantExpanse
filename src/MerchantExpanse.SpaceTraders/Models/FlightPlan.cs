@@ -2,30 +2,27 @@
 
 namespace MerchantExpanse.SpaceTraders.Models
 {
-	public class FlightPlan
+	public class FlightPlan : FlightPlanBase
 	{
-		public string Id { get; set; }
-
-		public string Ship { get; set; }
-
 		public int FuelConsumed { get; set; }
 
 		public int FuelRemaining { get; set; }
 
 		public int TimeRemainingInSeconds { get; set; }
 
-		public DateTime ArrivesAt { get; set; }
-
 		public DateTime? TerminatedAt { get; set; }
-
-		public string Destination { get; set; }
-
-		public string Departure { get; set; }
 
 		public int Distance { get; set; }
 	}
 
-	public class PublicFlightPlan
+	public class PublicFlightPlan : FlightPlanBase
+	{
+		public string Username { get; set; }
+
+		public string ShipType { get; set; }
+	}
+
+	public abstract class FlightPlanBase
 	{
 		public string Id { get; set; }
 
@@ -35,12 +32,8 @@ namespace MerchantExpanse.SpaceTraders.Models
 
 		public DateTime ArrivesAt { get; set; }
 
-		public string From { get; set; }
+		public string Destination { get; set; }
 
-		public string To { get; set; }
-
-		public string Username { get; set; }
-
-		public string ShipType { get; set; }
+		public string Departure { get; set; }
 	}
 }
